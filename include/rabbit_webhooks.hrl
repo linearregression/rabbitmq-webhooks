@@ -4,9 +4,10 @@
 -record(header, {name, 
 								 value}).
 -record(webhook, {exchange=#'exchange.declare'{}, 
-									queue=#'queue.declare'{}, 
+									queue=#'queue.declare'{},
 									routing_key, 
 									url, 
+									authorization, 
 									method, 
 									headers=[],
 									max_send=infinity,

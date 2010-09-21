@@ -39,8 +39,10 @@ init([Config]) ->
 		Channel = amqp_connection:open_channel(Connection),
 
 																								% Our configuration
+
 		Webhook = #webhook {
 			url=proplists:get_value(url, Config),
+			authorization=proplists:get_value(authorization, Config),
 			method=proplists:get_value(method, Config),
 			exchange=case proplists:get_value(exchange, Config) of
 									 [{exchange, Xname} | Xconfig] -> #'exchange.declare'{
@@ -189,6 +191,10 @@ handle_info({#'basic.deliver'{ delivery_tag=DeliveryTag },
 												] ++ case ReplyTo of
 																 undefined -> [];
 																 _ -> [{"X-ReplyTo", binary_to_list(ReplyTo)}]
+														 end
+													++ case Config#webhook.authorization of 
+																undefined -> [];
+																_ -> [{"Authorization", Config#webhook.authorization}]
 														 end,
 
 																								% Parameter-replace the URL
